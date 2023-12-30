@@ -1,0 +1,192 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Notification Service
+  description: The micro-service intended to provide various ways to send notifications to the user
+  contact:
+    email: prasanna@makonlinesolutions.com
+host: 185.213.175.212:5003
+basePath: /
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+  - multipart/form-data
+produces:
+  - application/json
+paths:
+  /system-health:
+    x-swagger-router-controller: system.controller
+    get:
+      description: Returns the systems cpu information
+      operationId: getHealthCheck
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SystemHealthResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /send-email:
+    x-swagger-router-controller: email.controller
+    post:
+      summary: Send Email
+      description: Send Email
+      operationId: sendEmail
+      parameters:
+        - in: body
+          name: login body object
+          description: username password to perform authentication
+          schema:
+            type: object
+            required:
+              - to
+              - subject
+              - content
+            properties:
+              to:
+                type: array
+                items:
+                  type: string
+              subject:
+                type: string
+              content:
+                type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            required:
+              - message
+            properties:
+              message:
+                type: string
+
+  /send-notification:
+    x-swagger-router-controller: fcm.controller
+    post:
+      summary: Send Mobile Notification
+      description: Send Mobile Notification
+      operationId: send
+      parameters:
+        - in: body
+          name: login body object
+          description: Send notification to mobile devices
+          schema:
+            type: object
+            required:
+              - registration_ids
+              - notification
+            properties:
+              registration_ids:
+                type: array
+                items:
+                  type: string
+              notification:
+                type: object
+                items:
+                  type: object
+                  required:
+                    - title
+                    - body
+                  properties:
+                    title:
+                      type: string
+                    body:
+                      type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            required:
+              - message
+            properties:
+              message:
+                type: string
+
+  /send-sms:
+    x-swagger-router-controller: sms.controller
+    post:
+      summary: Send SMS notification to provided mobile number
+      description: Send SMS notification to provided mobile number
+      operationId: send
+      parameters:
+        - in: body
+          name: login body object
+          description: Send sms to specified mobile numbers
+          schema:
+            type: object
+            required:
+              - to
+              - content
+            properties:
+              to:
+                type: array
+                description: Mobile nubmers to which the sms has to send
+                items:
+                  type: string
+                  description: SMS content to be included into the notification
+              content:
+                type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            required:
+              - message
+            properties:
+              message:
+                type: string
+definitions:
+  SystemHealthResponse:
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

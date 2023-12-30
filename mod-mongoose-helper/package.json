@@ -1,0 +1,14 @@
+{
+  "name": "@magcentre/mongoose-helper",
+  "version": "1.0.1",
+  "description": "This module is developed as wrapper aroung mongoose module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node -e \"console.log('Testing mod')\""
+  },
+  "author": "magcentre",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^6.0.14"
+  }
+}

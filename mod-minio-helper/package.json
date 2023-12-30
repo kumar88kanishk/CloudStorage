@@ -1,0 +1,17 @@
+{
+  "name": "@magcentre/minio-helper",
+  "version": "1.0.9",
+  "description": "Module to perform all minio operations such as uploading object, performing actions on bucket etc",
+  "main": "index.js",
+  "scripts": {
+    "test": "node -e \"console.log('Testing mod')\""
+  },
+  "author": "magcenter",
+  "license": "ISC",
+  "dependencies": {
+    "@magcentre/logger-helper": "^1.0.0",
+    "@magcentre/response-helper": "^1.0.0",
+    "aws-sdk": "^2.1075.0",
+    "crypto-js": "^4.1.1"
+  }
+}

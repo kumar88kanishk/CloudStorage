@@ -1,0 +1,103 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Object Reader
+  description: The micro-service intended to provide the mechanisum to fetch the objects from the minio server.
+  contact:
+    email: prasanna@makonlinesolutions.com
+host: 185.213.175.212:5002
+basePath: /
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+  - multipart/form-data
+produces:
+  - application/json
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  /system-health:
+    x-swagger-router-controller: system.controller
+    get:
+      description: Returns the systems cpu information
+      operationId: getHealthCheck
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SystemHealthResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /registry/download/{key}:
+    x-swagger-router-controller: registry.controller
+    get:
+      summary: Get object from minio
+      description: Get the object stored in minio via access key returned by object writer after uploading the object
+      operationId: download
+      security:
+        - jwt: []
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: The Object to upload into registry
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+              name:
+                description: "Name of the object stored in minio"
+                type: string
+              type:
+                description: "mime type of the object"
+                type: string
+              size:
+                type: integer
+                description: "Size of an object"
+                format: int32
+              url:
+                type: string
+                description: "Key require to access the object from object reader"
+              bucket:
+                type: string
+                description: "Bucket name in which the object is stored"
+              updatedAt:
+                type: string
+                description: "Bucket name in which the object is stored"
+              createdAt:
+                type: string
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+  SystemHealthResponse:
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

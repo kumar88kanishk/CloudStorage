@@ -1,0 +1,619 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Object Container
+  description: The micro-service intended to provide the mechanisum to store the objects to the minio server.
+  contact:
+    email: prasanna@makonlinesolutions.com
+host: localhost:5005
+basePath: /
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+  - multipart/form-data
+produces:
+  - application/json
+paths:
+  /system-health:
+    x-swagger-router-controller: system.controller
+    get:
+      description: Returns the systems cpu information
+      operationId: getHealthCheck
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SystemHealthResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /bucket/create:
+    x-swagger-router-controller: bucket.controller
+    post:
+      summary: recently modeified objects list
+      description: get all recently updated or modeified files list
+      operationId: bucketCreate
+      parameters:
+        - in: body
+          name: Bucket object
+          description: Bucket name
+          schema:
+            type: object
+            required:
+              - bucketName
+            properties:
+              bucketName:
+                type: string
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /bucket/exists:
+    x-swagger-router-controller: bucket.controller
+    post:
+      summary: Verify if the bucket exists or not 
+      description: Check if the bucket exists
+      operationId: bucketExists
+      parameters:
+        - in: body
+          name: Bucket object
+          description: Bucket name
+          schema:
+            type: object
+            required:
+              - bucketName
+            properties:
+              bucketName:
+                type: string
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /bucket/upload:
+    x-swagger-router-controller: bucket.controller
+    post:
+      summary: recently modeified objects list
+      description: get all recently updated or modeified files list
+      operationId: bucketUpload
+      security:
+        - jwt: []
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: The Object to upload into container
+        - in: formData
+          name: path
+          type: string
+          description: File path to store into object-writer
+      consumes:
+        - multipart/form-data
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /bucket/folder/create:
+    x-swagger-router-controller: bucket.controller
+    post:
+      summary: create a new folder inside a bucket
+      description: create a new folder inside a bucket
+      operationId: folderCreate
+      security:
+        - jwt: []
+      parameters:
+        - in: body
+          name: Folder Object
+          description: Folder configuration
+          schema:
+            type: object
+            required:
+              - folderName
+              - pathKey
+            properties:
+              folderName:
+                type: string
+              pathKey:
+                type: string
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /bucket/folder/update:
+    x-swagger-router-controller: bucket.controller
+    patch:
+      summary: Update folder state in folder model
+      description: update folder state in folder model
+      operationId: folderUpdate
+      security:
+        - jwt: []
+      parameters:
+        - in: body
+          name: Folder Object
+          description: Folder configuration
+          schema:
+            type: object
+            required:
+              - key
+              - properties
+            properties:
+              key:
+                type: string
+              properties:
+                type: object
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /bucket/folder/rename:
+    x-swagger-router-controller: bucket.controller
+    post:
+      summary: create a new folder inside a bucket
+      description: create a new folder inside a bucket
+      operationId: folderRename
+      security:
+        - jwt: []
+      parameters:
+        - in: body
+          name: Folder Object
+          description: Folder configuration
+          schema:
+            type: object
+            required:
+              - name
+              - pathKey
+              - parentKey
+            properties:
+              name:
+                type: string
+              pathKey:
+                type: string
+              parentKey:
+                type: string
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /bucket/object/rename:
+    x-swagger-router-controller: bucket.controller
+    post:
+      summary: rename existing file from the bucket 
+      description: rename existing file from the bucket 
+      operationId: fileRename
+      security:
+        - jwt: []
+      parameters:
+        - in: body
+          name: Folder Object
+          description: Folder configuration
+          schema:
+            type: object
+            required:
+              - name
+              - pathKey
+              - parentKey
+            properties:
+              name:
+                type: string
+              pathKey:
+                type: string
+              parentKey:
+                type: string
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /bucket/object/update:
+    x-swagger-router-controller: bucket.controller
+    patch:
+      summary: rename existing file from the bucket 
+      description: rename existing file from the bucket 
+      operationId: fileUpdate
+      security:
+        - jwt: []
+      parameters:
+        - in: body
+          name: Object Properties
+          description: Object properties
+          schema:
+            type: object
+            required:
+              - key
+              - properties
+            properties:
+              key:
+                type: string
+              properties:
+                type: object
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /bucket/share/:
+    x-swagger-router-controller: share.controller
+    post:
+      summary: Share key with provided userid
+      description: share key of file or folder to users
+      operationId: share
+      security:
+        - jwt: []
+      parameters:
+        - in: body
+          name: Object Properties
+          description: Object properties
+          schema:
+            type: object
+            required:
+              - key
+              - userIds
+            properties:
+              key:
+                type: string
+              userIds:
+                type: array
+                items:
+                  type: string
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /browse/:
+    x-swagger-router-controller: browse.controller
+    get:
+      summary: recently modeified objects list
+      description: get all recently updated or modeified files list
+      operationId: browse
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /browse/recent:
+    x-swagger-router-controller: browse.controller
+    get:
+      summary: list of recent files and folder
+      description: list of recent files and folder
+      operationId: recent
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /browse/starred:
+    x-swagger-router-controller: browse.controller
+    get:
+      summary: list of recent files and folder
+      description: list of recent files and folder
+      operationId: starred
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /browse/trashed:
+    x-swagger-router-controller: browse.controller
+    get:
+      summary: list of recent files and folder
+      description: list of recent files and folder
+      operationId: trashed
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /browse/{prefix}:
+    x-swagger-router-controller: browse.controller
+    get:
+      summary: recently modeified objects list
+      description: get all recently updated or modeified files list
+      operationId: browse
+      parameters:
+        - in: path
+          name: prefix
+          type: string
+          required: true
+          description: prefix for the minio
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /object/view/{key}:
+    x-swagger-router-controller: object.controller
+    get:
+      summary: get object details with Key
+      description: get all recently updated or modeified files list
+      operationId: objectView
+     
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: Folder hash in which file has to be uploaded
+        - in: query
+          name: token
+          type: string
+          description: auth token to access the reader and initiating download
+      consumes:
+        - multipart/form-data
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+  SystemHealthResponse:
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

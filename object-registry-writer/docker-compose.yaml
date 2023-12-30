@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+
+ registry-db:
+    container_name: object-registry-writer-db
+    image: mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=magcentre
+    networks:
+      - cloud-network
+    volumes:
+      - /home/prasanna/container-stroage/object-registry-writer:/data/db
+
+  mongo-express:
+    container_name: object-registry-writer-db-ui
+    image: mongo-express
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    environment:
+        - ME_CONFIG_MONGODB_SERVER=object-registry-writer-db
+        - ME_CONFIG_MONGODB_PORT=27017
+        - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+    depends_on:
+        - registry-db
+    ports:
+      - 8082:8081
+    networks:
+      - cloud-network
+
+
+  service:
+    container_name: object-registry-writer-service
+    depends_on:
+      - registry-db
+    build: .
+    restart: unless-stopped
+    ports:
+      - 5001:5001
+    stdin_open: true
+    tty: true
+    networks:
+      - cloud-network
+
+networks:
+  cloud-network:
+    name: cloud-network

@@ -1,0 +1,14 @@
+{
+  "name": "@magcentre/logger-helper",
+  "version": "1.0.1",
+  "description": "Single module for logging the information",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "magcenter",
+  "license": "ISC",
+  "dependencies": {
+    "winston": "^3.3.3"
+  }
+}

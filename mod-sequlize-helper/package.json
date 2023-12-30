@@ -1,0 +1,21 @@
+{
+  "name": "@magcentre/sequelize-helper",
+  "version": "1.0.0",
+  "description": "A wrapper around the sequelize to initate the models",
+  "main": "index.js",
+  "scripts": {
+    "test": "node -e \"console.log('Testing mod')\""
+  },
+  "keywords": [
+    "Sequelize",
+    "database",
+    "wrapper",
+    "data"
+  ],
+  "author": "magcenter",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^2.3.2",
+    "sequelize": "^6.8.0"
+  }
+}

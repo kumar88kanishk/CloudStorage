@@ -1,0 +1,16 @@
+{
+  "name": "@magcentre/init",
+  "version": "1.0.2",
+  "description": "The module help to setup the http server for services",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "swagger-express-mw": "^0.7.0",
+    "swagger-node-runner": "^0.7.3",
+    "swagger-tools": "^0.10.4"
+  },
+  "author": "Kanishk Kumar",
+  "license": "ISC"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@magcentre/response-helper",
+  "version": "1.0.3",
+  "description": "This module helps in response of API",
+  "main": "index.js",
+  "scripts": {
+    "test": "node -e \"console.log('Testing mod')\""
+  },
+  "keywords": [
+    "magcentre",
+    "microservice"
+  ],
+  "author": "magcentre",
+  "license": "ISC",
+  "dependencies": {
+    "sumologic-winston-logger": "^1.0.4",
+    "lodash": "4.17.15",
+    "verror": "1.10.0"
+  }
+}

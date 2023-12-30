@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+  container-db:
+    container_name: object-container-db
+    image: mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=magcentre
+    networks:
+      - cloud-network
+    volumes:
+      - /home/prasanna/container-stroage/object-container:/data/db
+
+  mongo-express:
+    container_name: object-container-db-ui
+    image: mongo-express
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    environment:
+        - ME_CONFIG_MONGODB_SERVER=object-container-db
+        - ME_CONFIG_MONGODB_PORT=27017
+        - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+    depends_on:
+        - container-db
+    ports:
+      - 8082:8081
+    networks:
+      - cloud-network
+
+  service:
+    container_name: object-container-service
+    depends_on:
+      - container-db
+    build: .
+    restart: unless-stopped
+    ports:
+      - 5005:5005
+    stdin_open: true
+    tty: true
+    networks:
+      - cloud-network
+
+networks:
+  cloud-network:
+    name: cloud-network

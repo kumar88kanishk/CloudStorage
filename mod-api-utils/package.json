@@ -1,0 +1,20 @@
+{
+  "name": "@magcentre/api-utils",
+  "version": "1.1.1",
+  "description": "Module will include all the common utils required to build restful api",
+  "main": "index.js",
+  "scripts": {
+    "test": "node -e \"console.log('Testing mod')\""
+  },
+  "keywords": [
+    "magcentre",
+    "microservice"
+  ],
+  "author": "magcentre",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "crypto-js": "^4.1.1",
+    "jsonwebtoken": "^8.5.1"
+  }
+}

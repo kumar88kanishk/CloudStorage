@@ -1,0 +1,707 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Object Container
+  description: The micro-service intended to provide the mechanisum to store the objects to the minio server.
+  contact:
+    email: prasanna@makonlinesolutions.com
+host: localhost:5005
+basePath: /
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+  - multipart/form-data
+produces:
+  - application/json
+paths:
+
+  /system-health:
+    x-swagger-router-controller: system.controller
+    get:
+      description: Returns the systems cpu information
+      operationId: getHealthCheck
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SystemHealthResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /folder/new:
+    x-swagger-router-controller: folder.controller
+    post:
+      summary: Create new folder
+      description: Create new folder in user account
+      operationId: createFolder
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: Create new folder
+          description: Create new folder under users account
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+              folderHash:
+                type: string
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+              name:
+                description: Name of the folder created
+                type: string
+              type:
+                description: "mime type of the object"
+                type: string
+              user:
+                type: string
+                description: "User account under the folder is created"
+                format: int32
+              hash:
+                type: string
+                description: Unique key for the folder
+              folderHash:
+                type: string
+                description: Parent folder hash
+              updatedAt:
+                type: string
+                description: Last updated date of the folder entry
+              createdAt:
+                type: string
+                description: Folder created date
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /folder/{key}:
+    x-swagger-router-controller: folder.controller
+    get:
+      summary: Upload Object
+      description: Get contents uploaded into folder
+      operationId: getFolder
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: Folder hash
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+              name:
+                description: "Name of the folder created"
+                type: string
+              type:
+                description: "mime type of the object"
+                type: string
+              user:
+                type: string
+                description: "User account under the folder is created"
+                format: int32
+              hash:
+                type: string
+                description: Unique key for the folder
+              folderHash:
+                type: string
+                description: Parent folder hash
+              updatedAt:
+                type: string
+                description: Last updated date of the folder entry
+              createdAt:
+                type: string
+                description: Folder created date
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    patch:
+      summary: Update folder meta properties
+      description: Update folder meta data with folder hash
+      operationId: updateFolder
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: Folder hash
+        - in: body
+          name: User body object
+          required: true
+          description: User creation body object
+          schema:
+            type: object
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    delete:
+      summary: Move the object to the trash
+      operationId: moveToTrash
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: hash of the file require to fetch the file from the minio
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /object/upload/{key}:
+    x-swagger-router-controller: object.controller
+    post:
+      summary: Upload Object
+      description: Upload a object into container
+      operationId: uploadObject
+      security:
+        - jwt: []
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: The Object to upload into container
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: Folder hash in which file has to be uploaded
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+              name:
+                description: "Name of the object stored in minio"
+                type: string
+              type:
+                description: "mime type of the object"
+                type: string
+              size:
+                type: integer
+                description: "Size of an object"
+                format: int32
+              url:
+                type: string
+                description: "Key require to access the object from object reader"
+              bucket:
+                type: string
+                description: "Bucket name in which the object is stored"
+              updatedAt:
+                type: string
+                description: "Bucket name in which the object is stored"
+              createdAt:
+                type: string
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /objects/stared:
+    x-swagger-router-controller: object.controller
+    get:
+      summary: get all stared objects of the user
+      description: Download the file with hash
+      operationId: staredObjects
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /objects/recent:
+    x-swagger-router-controller: object.controller
+    get:
+      summary: recently modeified objects list
+      description: get all recently updated or modeified files list
+      operationId: recentObjects
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /object/{key}:
+    x-swagger-router-controller: object.controller
+    get:
+      summary: get file from hash
+      description: Download the file with hash
+      operationId: getObject
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: hash of the file require to fetch the file from the minio
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    patch:
+      operationId: updateObject
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: hash of the file require to fetch the file from the minio
+        - in: body
+          name: User body object
+          required: true
+          description: User creation body object
+          schema:
+            type: object
+            
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      summary: Move the object to the trash
+      operationId: moveToTrash
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: hash of the file require to fetch the file from the minio
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /trash:
+    x-swagger-router-controller: object.controller
+    get:
+      summary: Upload Object
+      description: Get contents uploaded into folder
+      operationId: trashObjects
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+              name:
+                description: "Name of the folder created"
+                type: string
+              type:
+                description: "mime type of the object"
+                type: string
+              user:
+                type: string
+                description: "User account under the folder is created"
+                format: int32
+              hash:
+                type: string
+                description: Unique key for the folder
+              folderHash:
+                type: string
+                description: Parent folder hash
+              updatedAt:
+                type: string
+                description: Last updated date of the folder entry
+              createdAt:
+                type: string
+                description: Folder created date
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /trash/{key}:
+    x-swagger-router-controller: object.controller
+    delete:
+      summary: Delete object from users account
+      description: Update object as deleted for user
+      operationId: deleteObject
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: hash of the file require to fetch the file from the container
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+              name:
+                description: "Name of the folder created"
+                type: string
+              type:
+                description: "mime type of the object"
+                type: string
+              user:
+                type: string
+                description: "User account under the folder is created"
+                format: int32
+              hash:
+                type: string
+                description: Unique key for the folder
+              folderHash:
+                type: string
+                description: Parent folder hash
+              updatedAt:
+                type: string
+                description: Last updated date of the folder entry
+              createdAt:
+                type: string
+                description: Folder created date
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /share/tome:
+    x-swagger-router-controller: share.controller
+    get:
+      summary: Get all objects and folders shared to the logged in user
+      description: Shared to me 
+      operationId: sharedToMe
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /share/byme:
+    x-swagger-router-controller: share.controller
+    get:
+      summary: Get all objects and folders shared to the logged in user
+      description: Shared to me 
+      operationId: shareByMe
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /share/{key}:
+    x-swagger-router-controller: share.controller
+    get:
+      summary: get list of users to which the object is shared
+      description: return list of users to which the object is shared
+      operationId: shareDetail
+      parameters:
+        - in: path
+          name: key
+          type: string
+          required: true
+          description: hash of the file require to fetch the file from the minio
+        - in: query
+          name: s
+          type: string
+          required: true
+          description: source
+      security:
+        - jwt: []
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /bucket/create:
+    x-swagger-router-controller: bucket.controller
+    post:
+      summary: recently modeified objects list
+      description: get all recently updated or modeified files list
+      operationId: bucketCreate
+      parameters:
+        - in: body
+          name: Bucket object
+          description: Bucket name
+          schema:
+            type: object
+            required:
+              - bucketName
+            properties:
+              bucketName:
+                type: string
+      consumes:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              id:
+                type: integer
+                format: int32
+        "400":
+          description: Error
+          schema:
+            properties:
+              message:
+                type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+  SystemHealthResponse:
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

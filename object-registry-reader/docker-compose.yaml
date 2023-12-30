@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+
+  service:
+    container_name: object-registry-reader-service
+    build: .
+    restart: unless-stopped
+    ports:
+      - 5002:5002
+    stdin_open: true
+    tty: true
+    networks:
+      - cloud-network
+
+networks:
+  cloud-network:
+    name: cloud-network

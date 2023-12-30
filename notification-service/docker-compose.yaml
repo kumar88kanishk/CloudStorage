@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+  notification-db:
+    container_name: notification-db
+    image: mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=magcentre
+    networks:
+      - cloud-network
+    volumes:
+      - /home/prasanna/notification-stroage/object-container:/data/db
+
+  mongo-express:
+    container_name: notification-db
+    image: mongo-express
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    environment:
+        - ME_CONFIG_MONGODB_SERVER=notification-db
+        - ME_CONFIG_MONGODB_PORT=27017
+        - ME_CONFIG_MONGODB_ENABLE_ADMIN=false
+    depends_on:
+        - notification-db
+    ports:
+      - 8083:8081
+    networks:
+      - cloud-network
+
+  service:
+    container_name: object-notification-service
+    depends_on:
+      - notification-db
+    build: .
+    restart: unless-stopped
+    ports:
+      - 5003:5003
+    stdin_open: true
+    tty: true
+    networks:
+      - cloud-network
+
+networks:
+  cloud-network:
+    name: cloud-network

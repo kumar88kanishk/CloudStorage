@@ -1,0 +1,58 @@
+{
+  "name": "object-registry-writer",
+  "version": "1.0.0",
+  "swaggerFile": {
+    "version": "1.0.0",
+    "account": "magcenter"
+  },
+  "description": "The purpose of this (microservice) is to manage object reader registry",
+  "main": "./src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "lint": "gulp lint",
+    "docs": "gulp docs",
+    "pretest": "node ./local/testSetup.js",
+    "test": "exit 0",
+    "manualtest": "nyc gulp test",
+    "prestart": "node ./local/setup.js",
+    "start": "sh server-start.sh",
+    "commit-ready": "gulp docs; gulp lint; npm run test",
+    "unit": "mocha --recursive './test/src/unit/**/*.js'"
+  },
+  "Contributors": [
+    {
+      "name": "Kanishk Kumar"
+    }
+  ],
+  "keywords": [
+    "swagger",
+    "engine",
+    "objectReaderRegistry"
+  ],
+  "private": true,
+  "dependencies": {
+    "@magcentre/api-utils": "^1.0.0",
+    "@magcentre/init": "^1.0.0",
+    "@magcentre/logger-helper": "^1.0.0",
+    "@magcentre/minio-helper": "^1.0.0",
+    "@magcentre/mongoose-helper": "^1.0.0",
+    "@magcentre/response-helper": "^1.0.0",
+    "express": "^4.12.3",
+    "sequelize": "^6.20.1",
+    "systeminformation": "^5.11.16"
+  },
+  "devDependencies": {
+    "eslint": "^8.4.1",
+    "eslint-config-airbnb": "^19.0.2",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-react-hooks": "^4.3.0"
+  },
+  "author": "MAG Center",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/magcentre/object-registry-writer/"
+  }
+}
